@@ -27,6 +27,7 @@ stop = True
 get_img = ["fswebcam", "-q", "-r 1280x960", "--no-banner", path]
 
 # Try to take a photo
+
 while stop:
   pipe = Popen(get_img, stdout=PIPE, stderr=PIPE)
   output, error = pipe.communicate()
