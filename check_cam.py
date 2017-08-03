@@ -4,6 +4,7 @@ import datetime
 from config import cam_path
 from schedule import get_light
 import os
+from db import add_log
 
 light_mode = get_light()
 if not light_mode:

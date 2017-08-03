@@ -9,7 +9,7 @@ print "Set default valve and pump state"
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 GPIO.setup(pin['rele'][5], GPIO.OUT)
-GPIO.output(pin['rele'][5], GPIO.LOW)
+GPIO.output(pin['rele'][5], GPIO.HIGH)
 add_log("PUMP", "OFF")
 
 for valve in range(1,5):

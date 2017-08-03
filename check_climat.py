@@ -2,7 +2,7 @@ import sys
 import Adafruit_DHT as dht
 from config import pin, temperature, humidity, light_conf
 from schedule import get_stage, get_light
-from db import add_temperature_log, add_log, get_log
+from db import add_temperature_log, add_log, get_log, get_pin, add_pin
 import RPi.GPIO as GPIO
 
 sensor = dht.AM2302
@@ -22,9 +22,9 @@ if hum is not None and temp is not None:
         add_log("clima", "high temperature")
         if light_conf['led']:
             # Off DLR only when LED available
-            if get_log("DLR") != "HIGH":
+            if get_pin("DLR") != "HIGH":
                 GPIO.setup(pin['rele']['dlr'], GPIO.OUT)
-                GPIO.output(pin['rele']['dlr'], GPIO.LOW)
+                GPIO.output(pin['rele']['dlr'], GPIO.HIGH)
                 add_pin("DLR", "OFF")
 
     elif temp > temperature[stage]['extreme']:
@@ -32,16 +32,16 @@ if hum is not None and temp is not None:
         add_log("clima", "EXTREME temperature")
 
         GPIO.setup(pin['rele']['led'], GPIO.OUT)
-        GPIO.output(pin['rele']['led'], GPIO.LOW)
-        add_log("LED", "OFF")
+        GPIO.output(pin['rele']['led'], GPIO.HIGH)
+        add_pin("LED", "OFF")
 
         GPIO.setup(pin['rele']['dlr'], GPIO.OUT)
-        GPIO.output(pin['rele']['dlr'], GPIO.LOW)
-        add_log("DLR", "OFF")
+        GPIO.output(pin['rele']['dlr'], GPIO.HIGH)
+        add_pin("DLR", "OFF")
 
         GPIO.setup(pin['rele']['hum'], GPIO.OUT)
-        GPIO.output(pin['rele']['hum'], GPIO.LOW)
-        add_log("HUM", "OFF")
+        GPIO.output(pin['rele']['hum'], GPIO.HIGH)
+        add_pin("HUM", "OFF")
 
         hum = 100
 
@@ -51,22 +51,22 @@ if hum is not None and temp is not None:
             # Enable DLR as additional
             if get_pin("DLR") != "HIGH":
                 GPIO.setup(pin['rele']['dlr'], GPIO.OUT)
-                GPIO.output(pin['rele']['dlr'], GPIO.HIGH)
-                add_log("DLR", "ON")
+                GPIO.output(pin['rele']['dlr'], GPIO.LOW)
+                add_pin("DLR", "ON")
 
     if hum > humidity[stage]['max'] or hum >= 100:
         # Humidiator OFF
-        if get_log("HUM") != "LOW":
+        if get_pin("HUM") != "LOW":
             GPIO.setup(pin['rele']['hum'], GPIO.OUT)
-            GPIO.output(pin['rele']['hum'], GPIO.LOW)
-            add_log("HUM", "OFF")
+            GPIO.output(pin['rele']['hum'], GPIO.HIGH)
+            add_pin("HUM", "OFF")
 
     elif hum < humidity[stage]['min']:
         # Humidiator ON
-        if get_log("HUM") != "HIGH":
+        if get_pin("HUM") != "HIGH":
             GPIO.setup(pin['rele']['hum'], GPIO.OUT)
-            GPIO.output(pin['rele']['hum'], GPIO.HIGH)
-            add_log("HUM", "ON")
+            GPIO.output(pin['rele']['hum'], GPIO.LOW)
+            add_pin("HUM", "ON")
 
 else:
     add_log("clima", "Failed to get reading. Try again!")

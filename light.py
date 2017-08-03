@@ -17,13 +17,13 @@ GPIO.setup(pin['rele']['dlr'], GPIO.OUT)
 if light_mode:
   add_pin("DLR", "ON")
   add_pin("LED", "ON")
-  GPIO.output(pin['rele']['dlr'], GPIO.HIGH)
-  GPIO.output(pin['rele']['led'], GPIO.HIGH)
+  GPIO.output(pin['rele']['dlr'], GPIO.LOW)
+  GPIO.output(pin['rele']['led'], GPIO.LOW)
 else:
   add_pin("DLR", "OFF")
   add_pin("LED", "OFF")
-  GPIO.output(pin['rele']['dlr'], GPIO.LOW)
-  GPIO.output(pin['rele']['led'], GPIO.LOW)
+  GPIO.output(pin['rele']['dlr'], GPIO.HIGH)
+  GPIO.output(pin['rele']['led'], GPIO.HIGH)
 )
 
 

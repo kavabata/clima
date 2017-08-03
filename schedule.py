@@ -29,6 +29,11 @@ def get_light():
         print "Light: night mode"
         if hour >= start or hour < end:
             shoot = True
+    
+    if shoot:
+       print "Light ON"
+    else:
+       print "Light OFF"
 
     return shoot
 
