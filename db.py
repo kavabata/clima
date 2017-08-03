@@ -12,7 +12,7 @@ config = {
 
 db = MySQLdb.connect(
     user='clima',
-    passwd='clima123!',
+    passwd='',
     host='127.0.0.1',
     db='clima')
 
@@ -33,6 +33,15 @@ def add_dry_log(data):
     cursor = db.cursor()
     query = ("INSERT INTO dry (`sensor_1`, `sensor_2`, `sensor_3`, `sensor_4`, `created`)"
         " VALUES (%s, %s, %s, %s, NOW())")
+    cursor.execute(query, data)
+    db.commit()
+    cursor.close()
+
+def add_pin(action, message):
+    cursor = db.cursor()
+    query = ("INSERT INTO pins (`action`, `message`, `created`)"
+        " VALUES (%s, %s, NOW())")
+    data = (action, message)
     cursor.execute(query, data)
     db.commit()
     cursor.close()
@@ -71,6 +80,23 @@ def get_dry_hour(light):
 def get_log(action):
     cursor = db.cursor()
     query = ("SELECT message FROM logs "
+        "WHERE `action` = '" + action + "' "
+        "ORDER BY id DESC "
+        "LIMIT 1")
+    cursor.execute(query,())
+    if cursor.rowcount > 0:
+       data = cursor.fetchall()
+       message = data[0][0]
+    else:
+       message = ""
+
+    db.commit()
+    cursor.close()
+    return message
+
+def get_pin(action):
+    cursor = db.cursor()
+    query = ("SELECT message FROM pins "
         "WHERE `action` = '" + action + "' "
         "ORDER BY id DESC "
         "LIMIT 1")

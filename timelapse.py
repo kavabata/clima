@@ -3,6 +3,7 @@ import datetime
 from subprocess import call, Popen, PIPE
 import pprint
 import shutil
+from db import add_log
 
 yesterday =  datetime.datetime.now() + datetime.timedelta(days=-1)
 fol = yesterday.strftime("%Y%m%d")
@@ -17,6 +18,7 @@ print create_video
 
 pipe = call(create_video, shell=True)
 print "Video created"
+add_log("timelapse", video)
 
 shutil.rmtree(folder)
 print "Removed files"

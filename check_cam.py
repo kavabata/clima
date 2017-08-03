@@ -36,4 +36,5 @@ while stop:
     time.sleep(7)
   else:
     print "Photo taken: %s" % (path)
+    add_log('cam', folder + "/" + num + ".jpg")
 

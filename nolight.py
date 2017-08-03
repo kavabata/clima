@@ -1,5 +1,5 @@
 from config import pin, temperature, humidity, light_conf
-from db import add_log
+from db import add_log, add_pin
 import RPi.GPIO as GPIO
 
 
@@ -10,11 +10,11 @@ GPIO.setup(pin['rele']['led'], GPIO.OUT)
 GPIO.setup(pin['rele']['dlr'], GPIO.OUT)
 GPIO.setup(pin['rele']['hum'], GPIO.OUT)
 
-GPIO.output(pin['rele']['led'], GPIO.HIGH)
-GPIO.output(pin['rele']['dlr'], GPIO.HIGH)
-GPIO.output(pin['rele']['hum'], GPIO.HIGH)
+GPIO.output(pin['rele']['led'], GPIO.LOW)
+GPIO.output(pin['rele']['dlr'], GPIO.LOW)
+GPIO.output(pin['rele']['hum'], GPIO.LOW)
 
-add_log("LED", "HIGH")
-add_log("DLR", "HIGH")
-add_log("HUM", "HIGH")
+add_pin("LED", "HIGH")
+add_pin("DLR", "HIGH")
+add_pin("HUM", "HIGH")
 print "DLR, LED, HUM - OFF"
