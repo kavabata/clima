@@ -33,11 +33,11 @@ print "Set default valve and pump state"
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 GPIO.setup(pin['rele'][5], GPIO.OUT)
-GPIO.output(pin['rele'][5], GPIO.LOW)
+GPIO.output(pin['rele'][5], GPIO.HIGH)
 
 for valve in range(1,5):
   GPIO.setup(pin['rele'][valve], GPIO.OUT)
-  GPIO.output(pin['rele'][valve], GPIO.LOW)
+  GPIO.output(pin['rele'][valve], GPIO.HIGH)
 
 
 run_pump = False
@@ -53,7 +53,7 @@ for valve, ramp in {1: s1, 2: s2, 3: s3, 4: s4}.items():
       max_flow_time = box_flow[valve]
 
     print "Open valve %d" % (valve)
-    GPIO.output(pin['rele'][valve], GPIO.HIGH)
+    GPIO.output(pin['rele'][valve], GPIO.LOW)
     add_pin("VAL%d" % (valve), "OPEN")
 
 if run_pump == False:
@@ -62,7 +62,7 @@ if run_pump == False:
   exit(0)
 
 print "Run pump..."
-GPIO.output(pin['rele'][5], GPIO.HIGH)
+GPIO.output(pin['rele'][5], GPIO.LOW)
 add_pin("Pump", "OPEN")
 add_log("water", "Run pump for: %d" % (max_flow_time))
 
@@ -71,7 +71,7 @@ for x in range(1, max_flow_time + 1):
   for (valve, sec) in box_flow.items():
     if x == sec:
       print "Close valve %d" % valve
-      GPIO.output(pin['rele'][valve], GPIO.LOW)
+      GPIO.output(pin['rele'][valve], GPIO.HIGH)
       add_pin("VAL%d" % (valve), "CLOSE")
   time.sleep(1)
   print "Remind %d sec of %d sec" % (x, max_flow_time)

@@ -73,8 +73,8 @@ def get_dry_hour(light):
     
     db.commit()
     cursor.close()
-    return data[0]
-    #return (69, 79, 89, 99, 33)
+    #return data[0]
+    return (69, 39, 39, 39, 33)
 
 
 def get_log(action):
