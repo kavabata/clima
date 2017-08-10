@@ -29,6 +29,7 @@ pin['dry'][2] = 15 # up green
 pin['dry'][3] = 18 # d blue
 pin['dry'][4] = 23 # d black
 
+
 # valve operate
 pin['rele'][1] = 24 # 18 # d  valve orange #low=off
 pin['rele'][2] = 25 # 22 # d valve green
@@ -50,16 +51,22 @@ pin['rele'][8] = 20 # 38 # d humidity   #high=off
 # temperature sensor
 pin['dht'] = 21 # 40 #bcm
 
+# sits
+sits = {1: {}, 2: {}, 3: {}, 4: {}}
+sits[1] = { 'Status': True }
+sits[2] = { 'Status': False }
+sits[3] = { 'Status': False }
+sits[4] = { 'Status': False }
 
 # Light configuration
 
 light_conf = {'vega': {}, 'bloom': {}, 'stress': {}, 'test': {}}
 
 light_conf['vega']['start'] = 20
-light_conf['vega']['end'] = 14
+light_conf['vega']['end'] = 15
 
-light_conf['bloom']['start'] = 22
-light_conf['bloom']['end'] = 10
+light_conf['bloom']['start'] = 20
+light_conf['bloom']['end'] = 15
 
 light_conf['stress']['start'] = 23
 light_conf['stress']['end'] = 2
@@ -73,4 +80,4 @@ light_conf['led'] = False
 water_conf = {}
 
 water_conf['ramp'] = 50 # over 60% of dry mean start water
-water_conf['max'] = 30 # seconds of max flow
+water_conf['max'] = 15 # seconds of max flow

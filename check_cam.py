@@ -4,7 +4,8 @@ import datetime
 from config import cam_path
 from schedule import get_light
 import os
-from db import add_log
+import shutil
+from db import add_pin
 
 light_mode = get_light()
 if not light_mode:
@@ -14,14 +15,26 @@ if not light_mode:
 # Create file name / folder / title
 folder = datetime.datetime.now().strftime("%Y%m%d")
 num = datetime.datetime.now().strftime("%H%M")
+
 path = cam_path + folder + "/" + num + ".jpg"
 title = datetime.datetime.now().strftime("%d%b")
+
+zero = datetime.datetime.now().strftime("%M")
+zeroname = datetime.datetime.now().strftime("%Y%m%d%H")
+zeropath = cam_path + "live/" + zeroname + ".jpg"
+
 
 # Create folder if needed
 directory = os.path.dirname(path)
 if not os.path.exists(directory):
-    os.makedirs(directory)
-    print "Created folder: %s" % (directory)
+  os.makedirs(directory)
+  print "Created folder: %s" % (directory)
+
+# Create folder if needed
+directory = os.path.dirname(zeropath)
+if not os.path.exists(directory):
+  os.makedirs(directory)
+  print "Created folder: %s" % (directory)
 
 stop = True
 get_img = ["fswebcam", "-q", "-r 1280x960", "--no-banner", path]
@@ -38,5 +51,7 @@ while stop:
     time.sleep(7)
   else:
     print "Photo taken: %s" % (path)
-    add_log('cam', folder + "/" + num + ".jpg")
+    add_pin('CAM', num)
+    if zero == "00":
+      shutil.copyfile(path, zeropath)
 

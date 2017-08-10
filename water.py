@@ -1,11 +1,8 @@
-import sys
-import Adafruit_DHT as dht
 import datetime
 import time
-import os
 from schedule import get_stage
 from db import get_dry_hour, add_log, add_pin
-from config import water_conf, pin, light_conf
+from config import water_conf, pin, light_conf, sits
 import RPi.GPIO as GPIO
 
 stage = get_stage()
@@ -32,8 +29,8 @@ print "Set default valve and pump state"
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
-GPIO.setup(pin['rele'][5], GPIO.OUT)
-GPIO.output(pin['rele'][5], GPIO.HIGH)
+GPIO.setup(pin['rele']['pump'], GPIO.OUT)
+GPIO.output(pin['rele']['pump'], GPIO.HIGH)
 
 for valve in range(1,5):
   GPIO.setup(pin['rele'][valve], GPIO.OUT)
@@ -44,7 +41,7 @@ run_pump = False
 max_flow_time = 1
 
 for valve, ramp in {1: s1, 2: s2, 3: s3, 4: s4}.items():
-  if ramp > water_conf['ramp']:
+  if ramp > water_conf['ramp'] and sits[valve]['Status'] == True:
     run_pump = True
     print "Box %d need to water, ramp: %d" % (valve, ramp)
     add_log("water", "Box %d need to water, ramp: %d" % (valve, ramp))

@@ -1,7 +1,6 @@
 import os
 import datetime
-from subprocess import call, Popen, PIPE
-import pprint
+import subprocess
 import shutil
 from db import add_log
 
@@ -16,7 +15,7 @@ print folder
 create_video = "ffmpeg -framerate 24 -f image2 -pattern_type glob -i '" + folder + "*.jpg' " + video
 print create_video
 
-pipe = call(create_video, shell=True)
+out = subprocess.call(create_video, shell=True)
 print "Video created"
 add_log("timelapse", video)
 

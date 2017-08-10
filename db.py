@@ -67,14 +67,14 @@ def get_dry_hour(light):
         "sum(sensor_3)*100/count(*) as s3,"
         "sum(sensor_4)*100/count(*) as s4,"
         "count(*) as cnt FROM dry"
-        " WHERE created > DATE_SUB(NOW(), INTERVAL 1 HOUR)")
+        " WHERE created > DATE_SUB(NOW(), INTERVAL 3 HOUR)")
     cursor.execute(query,())
     data = cursor.fetchall()
     
     db.commit()
     cursor.close()
-    #return data[0]
-    return (69, 39, 39, 39, 33)
+    return data[0]
+    #return (90, 39, 39, 39, 33)
 
 
 def get_log(action):
