@@ -13,6 +13,8 @@ end = int(light_conf[stage]['end'])
 
 light_on = False
 (s1, s2, s3, s4, cnt) = get_dry_hour(light_on)
+#print("%d %d %d %d == %d" % (s1, s2, s3, s4, cnt))
+#exit(0)
 
 if int(cnt) < 30:
   print("Log error, have only %d logs" % (cnt))

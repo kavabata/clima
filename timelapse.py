@@ -12,12 +12,13 @@ video = "/home/pi/html/cam/" + fol + ".mp4"
 print "get files from"
 print folder
 
-create_video = "ffmpeg -framerate 24 -f image2 -pattern_type glob -i '" + folder + "*.jpg' " + video
-print create_video
+#create_video = "ffmpeg -framerate 24 -f image2 -pattern_type glob -i '" + folder + "*.jpg' " + video
+#print create_video
 
-out = subprocess.call(create_video, shell=True)
-print "Video created"
-add_log("timelapse", video)
+#out = subprocess.call(create_video, shell=True)
+#print "Video created"
+#add_log("timelapse", video)
 
 shutil.rmtree(folder)
 print "Removed files"
+

@@ -20,7 +20,7 @@ path = cam_path + folder + "/" + num + ".jpg"
 title = datetime.datetime.now().strftime("%d%b")
 
 zero = datetime.datetime.now().strftime("%M")
-zeroname = datetime.datetime.now().strftime("%Y%m%d%H")
+zeroname = datetime.datetime.now().strftime("%Y%m%d%H%M")
 zeropath = cam_path + "live/" + zeroname + ".jpg"
 
 
@@ -52,6 +52,6 @@ while stop:
   else:
     print "Photo taken: %s" % (path)
     add_pin('CAM', num)
-    if zero == "00":
+    if zero == "08" or zero == "25" or zero == "40" or zero == "55":
       shutil.copyfile(path, zeropath)
 

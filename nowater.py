@@ -10,7 +10,7 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 GPIO.setup(pin['rele'][5], GPIO.OUT)
 GPIO.output(pin['rele'][5], GPIO.HIGH)
-add_log("PUMP", "OFF")
+add_pin("PUMP", "OFF")
 
 for valve in range(1,5):
   GPIO.setup(pin['rele'][valve], GPIO.OUT)

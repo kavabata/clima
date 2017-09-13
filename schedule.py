@@ -12,7 +12,7 @@ def get_stage():
 
 def get_light_sch():
     stage = get_stage()
-    hour = int(datetime.datetime.now().strftime("%H"))
+    hour = int(datetime.datetime.now().strftime("%H%M"))
     start = int(light_conf[stage]['start'])
     end = int(light_conf[stage]['end'])
     return (hour, start, end)
