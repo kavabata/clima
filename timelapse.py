@@ -1,3 +1,5 @@
+exit(0)
+
 import os
 import datetime
 import subprocess

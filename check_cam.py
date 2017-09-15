@@ -1,11 +1,14 @@
 from subprocess import call, Popen, PIPE
 import time
 import datetime
-from config import cam_path
+
 from schedule import get_light
 import os
 import shutil
-from db import add_pin
+from db import add_pin, get_config
+
+config = get_config()
+cam_path = config['general.path.cam']
 
 light_mode = get_light()
 if not light_mode:

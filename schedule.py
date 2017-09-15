@@ -1,20 +1,17 @@
-from config import light_conf, bloom_date
+import db
+# from config import light_conf, bloom_date
 import datetime
-import time
-import datetime
+
+config = db.get_config()
+
 
 def get_stage():
-    today = int(datetime.datetime.now().strftime("%Y%m%d"))
-    if today > bloom_date:
-      return 'bloom'
-    else:
-      return 'vega'
+    return 'bloom'
 
 def get_light_sch():
-    stage = get_stage()
     hour = int(datetime.datetime.now().strftime("%H%M"))
-    start = int(light_conf[stage]['start'])
-    end = int(light_conf[stage]['end'])
+    start = int(config['climat.light.on'])
+    end = int(config['climat.light.off'])
     return (hour, start, end)
 
 def get_light():

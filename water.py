@@ -1,20 +1,120 @@
 import datetime
 import time
 from schedule import get_stage
-from db import get_dry_hour, add_log, add_pin
-from config import water_conf, pin, light_conf, sits
+from db import get_dry_hour, add_log, add_pin, get_config, get_water_pour, add_water, set_config
+from config import pin
 import RPi.GPIO as GPIO
 
+config = get_config()
 stage = get_stage()
-
-hour = int(datetime.datetime.now().strftime("%H"))
-start = int(light_conf[stage]['start'])
-end = int(light_conf[stage]['end'])
-
-light_on = False
-(s1, s2, s3, s4, cnt) = get_dry_hour(light_on)
+water_pour = get_water_pour()
+(s1, s2, s3, s4, cnt) = get_dry_hour()
 #print("%d %d %d %d == %d" % (s1, s2, s3, s4, cnt))
-#exit(0)
+
+# start gpio opration, set and clove valves
+GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
+GPIO.setup(pin['rele']['pump'], GPIO.OUT)
+GPIO.output(pin['rele']['pump'], GPIO.HIGH)
+
+for valve in range(1,5):
+  GPIO.setup(pin['rele'][valve], GPIO.OUT)
+  GPIO.output(pin['rele'][valve], GPIO.HIGH)
+
+# check if log works
+if int(cnt) < 1:
+  print "no dry logs"
+  add_log("water", "Log error, have only %d logs" % (cnt))
+  exit(0)
+
+
+for valve, ramp in {1: s1, 2: s2, 3: s3, 4: s4}.items():
+  #operate valve
+  print "Operate Valve %d" % valve
+
+  if config['box.water.status.%s' % (valve)] == '1':
+    # box enabled
+
+    if int(config['box.water.manual.%s' % (valve)]) > 0:
+      # manual schedule 4 times a day
+      print "Manual %s" % config['box.water.manual.%s' % (valve)]
+
+      if 'VAL%d' % (valve) not in water_pour:
+        # wasnt puered in last 6 hours
+
+        # open valve
+        print "OPEN VALVE %d" % (valve)
+        GPIO.output(pin['rele'][valve], GPIO.LOW)
+        add_pin("VAL%d" % (valve), "OPEN")
+
+        # run pump
+        print "RUN PUMP"
+        GPIO.output(pin['rele'][5], GPIO.LOW)
+        add_pin("Pump", "OPEN")
+
+        # start delay
+        runtime = int(int(config['box.water.manual.%s' % (valve)]) / 4)
+        for x in range(1, runtime + 1):
+          print "Remind %d sec of %d sec" % (x, runtime)
+          time.sleep(1)
+
+        # close valve
+        print "CLOSE VALVE %d" % (valve)
+        GPIO.output(pin['rele'][valve], GPIO.HIGH)
+        add_pin("VAL%d" % (valve), "CLOSE")
+
+        # stop pump
+        print "STOP PUMP"
+        GPIO.output(pin['rele']['pump'], GPIO.HIGH)
+        add_pin("PUMP", "OFF")
+
+        # add log
+        volume = int(runtime * int(config['can.water.1']))
+
+        left = int(config['can.left.1']) - volume
+        print "runtime %s" % (runtime)
+        print "volume %s" % (volume)
+        print "Left %s" % (left)
+        add_water('VAL%d' % (valve), runtime, volume)
+        set_config('can.left.1', left)
+    else:
+
+      if int(ramp) < int(config['box.water.limit.%d' % (valve)]):
+        # ramp limit exceed
+
+        # open valve
+        print "OPEN VALVE %d" % (valve)
+        GPIO.output(pin['rele'][valve], GPIO.LOW)
+        add_pin("VAL%d" % (valve), "OPEN")
+
+        # run pump
+        print "RUN PUMP"
+        GPIO.output(pin['rele'][5], GPIO.LOW)
+        add_pin("Pump", "OPEN")
+
+        # start delay
+        runtime = int(config['box.water.time.%s' % (valve)])
+        for x in range(1, runtime + 1):
+          print "Remind %d sec of %d sec" % (x, runtime)
+          time.sleep(1)
+
+        # close valve
+        print "CLOSE VALVE %d" % (valve)
+        GPIO.output(pin['rele'][valve], GPIO.HIGH)
+        add_pin("VAL%d" % (valve), "CLOSE")
+
+        # stop pump
+        print "STOP PUMP"
+        GPIO.output(pin['rele']['pump'], GPIO.HIGH)
+        add_pin("PUMP", "OFF")
+
+        # add log
+        volume = int(runtime * int(config['can.water.1']))
+        add_water('VAL%d' % (valve), runtime, volume)
+        left = int(config['can.left.1']) - volume
+        set_config('can.left.1', left)
+
+exit(0)
 
 if int(cnt) < 30:
   print("Log error, have only %d logs" % (cnt))
