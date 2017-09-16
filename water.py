@@ -59,7 +59,7 @@ if len(sys.argv) == 2:
   add_pin("PUMP", "OFF")
 
   # add log
-  volume = int(runtime * int(config['can.water.1']))
+  volume = int(runtime * float(config['can.water.1']))
   left = int(config['can.left.1']) - volume
   print "runtime %s" % (runtime)
   print "volume %s" % (volume)
@@ -116,7 +116,7 @@ for valve, ramp in dict.items():
         add_pin("PUMP", "OFF")
 
         # add log
-        volume = int(runtime * int(config['can.water.1']))
+        volume = int(runtime * float(config['can.water.1']))
 
         left = int(config['can.left.1']) - volume
         print "runtime %s" % (runtime)
@@ -156,7 +156,7 @@ for valve, ramp in dict.items():
         add_pin("PUMP", "OFF")
 
         # add log
-        volume = int(runtime * int(config['can.water.1']))
+        volume = int(runtime * float(config['can.water.1']))
         add_water('VAL%d' % (valve), runtime, volume)
         left = int(config['can.left.1']) - volume
         set_config('can.left.1', left)
