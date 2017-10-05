@@ -145,7 +145,7 @@ def set_config(key, value):
 def get_water_pour():
     cursor = db.cursor()
     query = ("SELECT valve, sum(delay) as delay FROM water "
-    "WHERE created > date_sub(now(), interval 6 hour) "
+    "WHERE created > date_sub(now(), interval 5 hour) "
     "GROUP BY valve "
     "ORDER BY valve")
     cursor.execute(query,())
