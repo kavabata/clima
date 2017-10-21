@@ -142,13 +142,15 @@ def set_config(key, value):
     db.commit()
     cursor.close()
 
-def get_water_pour():
+def get_water_pour(hour):
     cursor = db.cursor()
     query = ("SELECT valve, sum(delay) as delay FROM water "
-    "WHERE created > date_sub(now(), interval 5 hour) "
+    "WHERE created > date_sub(now(), interval %s hour) "
     "GROUP BY valve "
-    "ORDER BY valve")
-    cursor.execute(query,())
+    "ORDER BY valve" % (hour))
+    print query
+    print hour
+    cursor.execute(query)
     result = {}
     if cursor.rowcount > 0:
         data = cursor.fetchall()

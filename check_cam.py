@@ -2,7 +2,7 @@ from subprocess import call, Popen, PIPE
 import time
 import datetime
 
-from schedule import get_light
+from schedule import get_light, get_sol
 import os
 import shutil
 from db import add_pin, get_config
@@ -11,39 +11,26 @@ config = get_config()
 cam_path = config['general.path.cam']
 
 light_mode = get_light()
+
 if not light_mode:
   print "No Light: No Photo"
   exit(0)
 
-# Create file name / folder / title
-folder = datetime.datetime.now().strftime("%Y%m%d")
-num = datetime.datetime.now().strftime("%H%M")
-
-path = cam_path + folder + "/" + num + ".jpg"
-title = datetime.datetime.now().strftime("%d%b")
-
-zero = datetime.datetime.now().strftime("%M")
-zeroname = datetime.datetime.now().strftime("%Y%m%d%H%M")
-zeropath = cam_path + "live/" + zeroname + ".jpg"
-
+# Create file name / folder
+date_name = datetime.datetime.now().strftime("%Y%m%d")
+file_name = datetime.datetime.now().strftime("%H%M")
+file_path = cam_path + date_name + "/" + file_name + ".jpg"
 
 # Create folder if needed
-directory = os.path.dirname(path)
-if not os.path.exists(directory):
-  os.makedirs(directory)
-  print "Created folder: %s" % (directory)
-
-# Create folder if needed
-directory = os.path.dirname(zeropath)
+directory = os.path.dirname(file_path)
 if not os.path.exists(directory):
   os.makedirs(directory)
   print "Created folder: %s" % (directory)
 
 stop = True
-get_img = ["fswebcam", "-q", "-r 1280x960", "--no-banner", path]
+get_img = ["fswebcam", "-q", "-r 1280x960", "--no-banner", file_path]
 
 # Try to take a photo
-
 while stop:
   pipe = Popen(get_img, stdout=PIPE, stderr=PIPE)
   output, error = pipe.communicate()
@@ -53,8 +40,21 @@ while stop:
     print "Camera access failed: %s" % (error)
     time.sleep(7)
   else:
-    print "Photo taken: %s" % (path)
-    add_pin('CAM', num)
-    if zero == "08" or zero == "25" or zero == "40" or zero == "55":
-      shutil.copyfile(path, zeropath)
+    print "Photo taken: %s" % (file_path)
+    add_pin('CAM', file_name)
 
+    min = datetime.datetime.now().strftime("%M")
+    if int(min) % 5 == 0:
+      sol = get_sol()
+      sol_name = "sol-" + str(sol)
+      sol_file_name = datetime.datetime.now().strftime("%Y%m%d%H%M")
+      sol_path = cam_path + sol_name + "/" + sol_file_name + ".jpg"
+
+      # Create folder if needed
+      directory = os.path.dirname(sol_path)
+      if not os.path.exists(directory):
+        os.makedirs(directory)
+        print "Created folder: %s" % (directory)
+
+      shutil.copyfile(file_path, sol_path)
+      print "Copy to Sol: %s => %s" % (file_path, sol_path)

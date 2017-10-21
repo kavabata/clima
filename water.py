@@ -1,6 +1,6 @@
 import datetime
 import time
-from schedule import get_stage
+from schedule import get_stage, get_light
 from db import get_dry_hour, add_log, add_pin, get_config, get_water_pour, add_water, set_config
 from config import pin
 import RPi.GPIO as GPIO
@@ -8,10 +8,12 @@ import sys
 
 config = get_config()
 stage = get_stage()
-water_pour = get_water_pour()
+light = 3 if get_light() else 6
+water_pour = get_water_pour(light)
 (s1, s2, s3, s4, cnt) = get_dry_hour()
 #print("%d %d %d %d == %d" % (s1, s2, s3, s4, cnt))
 dict = {1: s1, 2: s2, 3: s3, 4: s4}
+print "Left hours %s WP %s" % (light, water_pour)
 
 # start gpio opration, set and clove valves
 GPIO.setmode(GPIO.BCM)
@@ -28,6 +30,15 @@ if len(sys.argv) == 2:
   if valve not in {1,2,3,4}:
     exit(0)
 
+
+  # start delay
+  if int(config['box.water.manual.%s' % (valve)]) > 0:
+    runtime = int(config['box.water.manual.%s' % (valve)]) / 6 # /5
+  else:
+    runtime = int(config['box.water.time.%s' % (valve)]) # /5
+
+  print "runtime %s" % (runtime)
+
   # open valve
   print "OPEN VALVE %d" % (valve)
   GPIO.output(pin['rele'][valve], GPIO.LOW)
@@ -38,11 +49,6 @@ if len(sys.argv) == 2:
   GPIO.output(pin['rele'][5], GPIO.LOW)
   add_pin("Pump", "OPEN")
 
-  # start delay
-  if int(config['box.water.manual.%s' % (valve)]) > 0:
-    runtime = int(config['box.water.manual.%s' % (valve)])
-  else:
-    runtime = int(config['box.water.time.%s' % (valve)])
 
   for x in range(1, runtime + 1):
     print "Remind %d sec of %d sec" % (x, runtime)
@@ -61,7 +67,7 @@ if len(sys.argv) == 2:
   # add log
   volume = int(runtime * float(config['can.water.1']))
   left = int(config['can.left.1']) - volume
-  print "runtime %s" % (runtime)
+
   print "volume %s" % (volume)
   print "Left %s" % (left)
   add_water('VAL%d' % (valve), runtime, volume)
@@ -76,7 +82,7 @@ if int(cnt) < 1:
 
 
 for valve, ramp in dict.items():
-  #operate valve
+  # operate valve
   print "Operate Valve %d" % valve
 
   if config['box.water.status.%s' % (valve)] == '1':
@@ -100,7 +106,7 @@ for valve, ramp in dict.items():
         add_pin("Pump", "OPEN")
 
         # start delay
-        runtime = int(int(config['box.water.manual.%s' % (valve)]) / 4)
+        runtime = int(int(config['box.water.manual.%s' % (valve)]) / 6)
         for x in range(1, runtime + 1):
           print "Remind %d sec of %d sec" % (x, runtime)
           time.sleep(1)

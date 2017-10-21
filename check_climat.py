@@ -27,13 +27,12 @@ if hum is not None and temp is not None:
             GPIO.output(pin['rele']['dlr'], GPIO.HIGH)
             add_pin("DLR", "OFF")
 
-    elif temp < config['climat.temperature.min']:
-
-        if get_pin("DLR") != "ON":
-            add_log("clima", "cold temperature")
-            GPIO.setup(pin['rele']['dlr'], GPIO.OUT)
-            GPIO.output(pin['rele']['dlr'], GPIO.LOW)
-            add_pin("DLR", "ON")
+    # elif temp < config['climat.temperature.min']:
+        # if get_pin("DLR") != "ON":
+        #     add_log("clima", "cold temperature")
+        #     GPIO.setup(pin['rele']['dlr'], GPIO.OUT)
+        #     GPIO.output(pin['rele']['dlr'], GPIO.LOW)
+        #     add_pin("DLR", "ON")
     else:
         print('Temp is OK')
 

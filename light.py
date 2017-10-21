@@ -15,7 +15,7 @@ GPIO.setup(pin['rele']['led'], GPIO.OUT)
 GPIO.setup(pin['rele']['dlr'], GPIO.OUT)
 
 
-if light_mode and config['general.silent'] == '0':
+if light_mode and config['general.sleep'] == '0':
   add_pin("DLR", "ON")
   add_pin("LED", "ON")
   GPIO.output(pin['rele']['dlr'], GPIO.LOW)
